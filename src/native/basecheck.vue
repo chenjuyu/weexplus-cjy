@@ -1,6 +1,6 @@
 <template>
-    <div class="demo"  ref="cjy" :style="cityExtendStyle">
-
+    <div class="demo"  ref="cjy" :style="cityExtendStyle" v-if="displayflag">
+     <scroller>
             <div class="margin">
                 <wxc-checkbox-list :list="list"
                                    @wxcCheckBoxListChecked="wxcCheckBoxListChecked"></wxc-checkbox-list>
@@ -9,10 +9,13 @@
 
         <wxc-button text="确定"
                     @wxcButtonClicked="wxcButtonClicked"></wxc-button>
+     </scroller>
     </div>
+
 </template>
 
 <script>
+    const  pref=weex.requireModule('pref');
     import { WxcCheckbox,WxcCheckboxList,WxcButton,Utils  } from 'weex-ui'
     export default {
         components:{WxcCheckbox, WxcCheckboxList,WxcButton},
@@ -20,21 +23,26 @@
         return {
             name: "basecheck",
             list: [
-                { title: '选项1', value: 1 },
+               { title: '选项1', value: 1 },
                 { title: '选项2', value: 2, checked: true },
                 { title: '选项3', value: 3 },
                 { title: '选项4', value: 4 }
             ],
-            checkedList: [2]
+            checkedList: []
         }
        }, props: {
-            show:{
-                default:true
+            displayflag:{
+                default:false
             },
             animationType: {
                 type: String,
                 default: 'push'
             }
+        },
+        created(){
+
+
+
 
         },
 
@@ -43,17 +51,19 @@
                 return Utils.uiStyle.pageTransitionAnimationStyle(this.animationType)
             }
 
-        },mounted(){
-
         },
-
         methods: {
             wxcCheckBoxListChecked (e){
                 this.checkedList = e.checkedList;
             }, wxcButtonClicked (e) {
                 //this.alert(this.checkedList)
-                this.show(false);
+
+               this.show(false);
+                this.displayflag=false
                 this.$emit('choice', { item: this.checkedList.toString() });
+               // this.DestroyIncomeStatistics = false; //强制刷新子组件 标识
+                this.checkedList.splice(0,this.checkedList.length)
+                this.list.splice(0,this.list.length)
                 console.log(e)
             }, show(status = true, callback = null) {
                 const ref = this.$refs.cjy
@@ -62,6 +72,40 @@
                 } else if (this.animationType === 'model') {
                     Utils.animation.pageTransitionAnimation(ref, `translateY(${status ? -Utils.env.getScreenHeight() : Utils.env.getScreenHeight()}px)`, status, callback)
                 }
+            },showpost(e){
+                this.displayflag=true
+                var parma={};
+                var url='/select.do?getCustomer'
+                parma.currPage=1;
+                // self.alert('运行到这里')
+                const net = weex.requireModule('net');
+                net.post(pref.getString('ip')+url,{"currPage":"1"},{},function () {
+                    //start
+
+                }, (e)=>{
+                    //this.alert(e.obj)
+                    //success
+                    //  debugger
+                    this.list.splice(0,this.list.length)
+                    // this.$refs.cjy.checkedList.splice(0,this.$refs.cjy.checkedList.length)
+
+
+                    console.log("res对象:"+e.res);
+                    console.log("res对象里的obj对象中的username:"+e.res.obj);
+                    var array=e.res.obj
+                    for(var i=0;i<array.length;i++){
+                        var map={}
+                        map.title=array[i].Customer
+                        map.value=array[i].CustomerID
+                        map.checked=false
+                        this.list.push(map)
+                    }  },function(e){
+                    //compelete
+
+                },function(e){
+                    //exception
+                    //  this.alert("返回数据失败")
+                });
             }
         }
     }

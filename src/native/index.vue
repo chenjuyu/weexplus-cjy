@@ -95,7 +95,7 @@
                   //  this.alert("返回数据失败")
                 });
 
-                this.push('root:Possales.js');
+                this.push('root:report.js');
             }
         },
         created(){

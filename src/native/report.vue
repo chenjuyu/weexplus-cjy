@@ -67,7 +67,8 @@
     import navhead from './component/navhead.vue'
     const dom = weex.requireModule('dom')
     const test=weex.requireModule('test');
-    let array={}
+    const  pref=weex.requireModule('pref');
+
     export default {
         components: { basecheck,navhead,WxcCity
 
@@ -123,7 +124,7 @@
             },
             sourceData:{
 
-                default:array
+                default:''
             },value:{
                 default:''
             }
@@ -172,7 +173,16 @@
             onInput (e) {
             },
             showyuangong(){
-                this.$refs.cjy.show()
+
+               this.$refs.cjy.show();
+                this.$refs.cjy.showpost()
+                // 然后再父组件内的增删改查方法中操作，就好了
+
+
+
+
+
+
             },
             submit(e){
                 //this.toast(e.value)
@@ -180,7 +190,7 @@
                 this.value=e.item
             }
         },
-        created() {
+       /*created() {
             let pa={}
             pa.str="给android的一个请求条件";
             pa.text="aaaa";
@@ -189,7 +199,7 @@
                 debugger
                 console.log("返回的内容:"+e);
             });
-        },mounted () {
+        },*/ mounted () {
             // 模拟定位
             setTimeout(() => {
                 this.location = '杭州';
