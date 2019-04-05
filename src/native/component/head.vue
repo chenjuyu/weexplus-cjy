@@ -1,4 +1,26 @@
 <template>
+
+  <div class="wxc-demo">
+        <scroller class="scroller">
+            <div class="demo">
+                <wxc-minibar background-color="#1EA5FC"
+
+                             @wxcMinibarLeftButtonClicked="minibarLeftButtonClick"
+                             @wxcMinibarRightButtonClicked="minibarRightButtonClick">
+                    <image :src="leftButton"
+                           slot="left"
+                           style="height: 70px;width: 70px;" ></image>
+                    <text style="font-size: 40px;" slot="middle">全部自定义化</text>
+                    <image slot="right"
+                           src="https://img.alicdn.com/tfs/TB1j39Uc0fJ8KJjy0FeXXXKEXXa-160-128.png"
+                           style="height: 32px;width: 40px"></image>
+                </wxc-minibar>
+            </div>
+
+
+        </scroller>
+    </div>
+<!--
     <div class="layout"  :style="{'background-color':bgcolor,'height':height+'px'}">
         <div :style="{'top':titletop}" style="flex-direction: row;margin-top: 13px;">
             <text style="flex: 1;text-align: center;font-size: 36;" :style="{'color':titleColor}" @click="titleClick">{{title}}</text>
@@ -9,7 +31,7 @@
         <div :style="{'height':height}" @click="rightclick"
              style="width: 130;position: absolute;right: 0;top: 10;align-items: center; margin-top: 13px;justify-content: center;">
             <slot name="right"></slot>
-        </div>
+        </div> -->
         <!--  <slot name="right"></slot>
         <div :style="{'height':height}" @click="rightclick"
              style="width: 130;position: absolute;right: 0;top: 0;align-items: center;justify-content: center;">
@@ -24,9 +46,14 @@
     </div>
 </template>
 <script>
-
+//     <div style="height: 130px" >
+//  <head leftButton=""></head>
+ //     </div>   leftButton=""  表示没有返回
+ import { WxcMinibar } from 'weex-ui';
     export default {
+        components: { WxcMinibar },
         props: {
+        leftButton:{default:'root:img/back.png'},
             title: {
                 default: ''
 
@@ -164,6 +191,22 @@
         justify-content: center;
 
     }
-
+   .wxc-demo {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color:#1EA5FC;
+    }
+    .scroller {
+        flex: 1;
+    }
+    .demo {
+        width: 750px;
+        height: 130px;
+        align-items: flex-start;
+        padding-top: 40px;
+    }
 
 </style>
