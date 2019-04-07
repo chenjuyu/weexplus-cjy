@@ -1,5 +1,18 @@
 <template>
     <div class="demo"  ref="cjy" :style="cityExtendStyle" v-if="displayflag">
+    
+    <head :autoback="false" @backClick="back" rightButton=""></head>
+        <div>
+            <wxc-searchbar ref="wxc-searchbar"
+                           @wxcSearchbarCancelClicked="wxcSearchbarCancelClicked"
+                           @wxcSearchbarInputReturned="wxcSearchbarInputReturned"
+                           @wxcSearchbarInputOnInput="wxcSearchbarInputOnInput"
+                           @wxcSearchbarCloseClicked="wxcSearchbarCloseClicked"
+                           @wxcSearchbarInputOnFocus="wxcSearchbarInputOnFocus"
+                           @wxcSearchbarInputOnBlur="wxcSearchbarInputOnBlur"></wxc-searchbar>
+        </div>
+    
+    
      <scroller>
             <div class="margin">
                 <wxc-checkbox-list :list="list"
@@ -16,9 +29,9 @@
 
 <script>
     const  pref=weex.requireModule('pref');
-    import { WxcCheckbox,WxcCheckboxList,WxcButton,Utils  } from 'weex-ui'
+    import { WxcCheckbox,WxcCheckboxList,WxcButton,WxcSearchbar,Utils  } from 'weex-ui'
     export default {
-        components:{WxcCheckbox, WxcCheckboxList,WxcButton},
+        components:{WxcCheckbox, WxcCheckboxList,WxcButton,WxcSearchbar},
        data() {
         return {
             name: "basecheck",
@@ -53,6 +66,33 @@
 
         },
         methods: {
+        back(){
+                 this.show(false);
+             },
+             setValue () {
+                 this.$refs['wxc-searchbar'].setValue('点击了手动设置输入框内容的开关');
+             },
+             wxcSearchbarInputOnFocus () {
+                 modal.toast({ 'message': 'onfocus', 'duration': 1 });
+             },
+             wxcSearchbarInputOnBlur () {
+                 modal.toast({ 'message': 'onbulr', 'duration': 1 });
+             },
+             wxcSearchbarCloseClicked () {
+                 modal.toast({ 'message': 'close.click', 'duration': 1 });
+             },
+             wxcSearchbarInputOnInput (e) {
+                 this.value = e.value;
+             },
+             wxcSearchbarCancelClicked () {
+                 modal.toast({ 'message': 'cancel.click', 'duration': 1 });
+             },
+             wxcSearchbarInputDisabledClicked () {
+                 modal.toast({ 'message': 'input.onclick', 'duration': 1 });
+             },
+             wxcSearchbarDepChooseClicked () {
+                 modal.toast({ 'message': 'dep.choose.click', 'duration': 1 });
+             },
             wxcCheckBoxListChecked (e){
                 this.checkedList = e.checkedList;
             }, wxcButtonClicked (e) {
