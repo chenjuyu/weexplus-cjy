@@ -154,7 +154,8 @@
         },
 
         created: function () {
-
+            var font=weex.requireModule("font");
+            font.addFont('iconfont','root:font/iconfont.ttf')//阿里的 iconfont
 
             this.adjust();
 
