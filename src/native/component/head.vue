@@ -193,12 +193,15 @@
 
     }
    .wxc-demo {
-        position: absolute;
+       /*  position: absolute; */
         top: 0;
         bottom: 0;
         left: 0;
         right: 0;
         background-color:#1EA5FC;
+        width: 750px;
+        height: 130px;
+        display: block;
     }
     .scroller {
         flex: 1;
