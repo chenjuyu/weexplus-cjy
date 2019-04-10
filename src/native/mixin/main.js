@@ -46,6 +46,11 @@ Mixins.install = (Vue, options) => {
           p = p.param
         if (this.onLoad != undefined)
           this.onLoad(p)
+        
+             if (WXEnvironment.platform === 'android') {
+              let keyboard = weex.requireModule('keyboard')
+              keyboard.setKeyboardMode('adjust_pan')   //全局适屏，不会被键盘顶起
+          }
 
 
       });
