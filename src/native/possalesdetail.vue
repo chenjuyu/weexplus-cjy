@@ -22,10 +22,8 @@
             </div>
             <div style="flex-direction: row;justify-content:flex-start;align-items: center">
                 <text class="text">货品/条码</text>
-                <input class="input" type="number" v-model="barcode" @return="search"/>
-             <!--   <div class="btn" @click="handleClick()">
-                    <text class="btn-text">{{goods.code}}</text>
-                </div> -->
+                <input class="input" type="number" v-model="barcode" @return="search" return-key-type="search"/>
+
 
             </div>
         </div>
@@ -42,7 +40,7 @@
         </div>
          <scroller>
         <div class="cell" v-for="(ls,index) in list">
-            <text class="cellitem">{{ls.BarCode}}</text>
+            <text class="cellitem">{{ls.Barcode}}</text>
             <text style="width: 150px;height: 30px">{{ls.GoodsCode}}</text>
             <text class="cellitem">{{ls.ColorName}}</text>
             <text class="cellitem">{{ls.SizeName}}</text>
@@ -55,16 +53,16 @@
      </scroller>
         <div  class="tabbar">
             <div style="flex-direction: row;justify-content:flex-start;align-items: center">
-                <text>折让</text><input type="number" :disabled="true" v-model="DiscountSum" style="width: 300px;height: 70px;border-bottom-width:1px;"/>
-                <text>实付</text><input type="number" :disabled="true" v-model="AmountSum" style="width: 300px;height: 70px;border-bottom-width:1px;">
+                <text>折让</text><input type="number"  v-model="discountMoney" style="width: 300px;height: 70px;border-bottom-width:1px;"/>
+                <text>实付</text><input type="number"  v-model="AmountSum" style="width: 300px;height: 70px;border-bottom-width:1px;">
             </div>
             <div style="flex-direction: row;justify-content:flex-start;align-items: center">
-                <text>积分</text><input type="number" :disabled="true" v-model="Point" style="width: 300px;height: 70px;border-bottom-width:1px;"/>
-                <text>抵扣</text><input type="number" :disabled="true" v-model="Discount" style="width: 300px;height: 70px;border-bottom-width:1px;">
+                <text>积分</text><input type="number"  v-model="Point" style="width: 300px;height: 70px;border-bottom-width:1px;"/>
+                <text>抵扣</text><input type="number" :disabled="true" v-model="exchange_amount" style="width: 300px;height: 70px;border-bottom-width:1px;">
             </div>
             <div style="flex-direction: row; background-color: red; position: fixed;bottom: 0;left: 0;right: 0;height: 80px;align-items: center;justify-content:flex-start">
                 <text>合计：</text><text>{{QuantitySum}}</text><text style="margin-left: 100px">￥{{AmountSum}}</text>
-                <div  v-if="show" style="background-color: orange;position: fixed;right: 0;bottom: 0;width: 250px;height: 80px;align-items: center;justify-content:center"><text @click="save">保存</text></div>
+                <div  v-if="show" style="background-color: orange;position: fixed;right: 0;bottom: 0;width: 250px;height: 80px;align-items: center;justify-content:center"><text @click="save">{{savetitle}}</text></div>
             </div>
 
 
@@ -74,18 +72,21 @@
 
 <script>
     const  pref=weex.requireModule('pref');
+    const saveMethod="/salesTicket.do?saveSalesTicket"
     export default {
         data() {
             return {
                 name: "possalesdetail",
+                savetitle:'保存',
                 show:false,
                 AmountSum:0.00,
+                discountMoney:0.00,
                 QuantitySum:0,
                 DiscountSum:0.0,
                 amount:0.0,
                 type:'销售单',
                 Point:0,
-                Discount:0.0,
+                exchange_amount:0.0,
                 barcode:'',
                 list:[],
                 iqty:1,
@@ -98,7 +99,10 @@
                     vipId:'',
                     vipCode:'',
                     vip:'',
-                    DiscountRate:0.0
+                    VIPTypeID:'',
+                    DiscountRate:0.0,
+                    vipPointRate:0,
+                    UsablePoint:0
                 },
                 goods:{
                     goodsid:'',
@@ -149,19 +153,28 @@
                     animate:true,
                     isPortrait:true},(res)=>{
                     if (res !=undefined) {
-                        if (id===1){
-                        this.emp.employeeid = res.id;
+                        if (id===1){ //员工
+
+                        this.emp.employeeId = res.id;
+                          //  this.alert("employeeid:"+this.emp.employeeId)
                         this.emp.Name = res.Name;
                         this.color = '#000'
-                        }else if(id===2){
+                        }else if(id===2){ //vip
+
+
                             this.vip.vipId=res.id
                             this.vip.vip =res.Name;
+                            this.vip.vipCode=res.Code
                             this.vip.DiscountRate=res.DiscountRate
+                            this.vip.UsablePoint =res.UsablePoint
+                            this.vip.vipPointRate =res.vipPointRate
+                            this.vip.VIPTypeID =res.VIPTypeID
+
 
                         }
-                      //  this.alert(this.emp.employeeid);
+
                     }
-                    //this.alert(res);
+
                 });
             },search(){
                 let self=this
@@ -193,29 +206,48 @@
                      //  self.alert(e.res.obj)
 
                      //  debugger
-                      // for (var i=0;i<array.length;i++) {
+
                            var map = {};
-                               map.BarCode=array.BarCode;
+                              map.Barcode=array.BarCode;
                                map.GoodsName = array.GoodsName;
                                map.ColorName = array.ColorName;
                                map.SizeName = array.SizeName;
                                map.GoodsCode = array.GoodsCode;
                                map.Discount = self.vip.DiscountRate==0?array.Discount:Number(self.vip.DiscountRate);
+                               map.DiscountRate=self.vip.DiscountRate==0?array.Discount:Number(self.vip.DiscountRate);
                                map.GoodsID = array.GoodsID;
                                map.ColorID = array.ColorID;
                                map.SizeID = array.SizeID;
                                map.UnitPrice = array.UnitPrice;
                                map.RetailSales = array.RetailSales;
                                map.Quantity=self.iqty==0?1:self.iqty
+
+
+                              if (map.DiscountRate !=null) {
+                                  map.DiscountPrice =Number(map.UnitPrice) * Number(map.DiscountRate)/10.0
+                              }else{
+                                  map.DiscountPrice=null
+                              }
                              //  map.Amount=self.iqty==0?1:parseFloat(self.iqty * array.UnitPrice).toFixed(2) //先单价* 数量，后台促销后面再算
                         //  self.list.push(map); //最后面
                         //   self.alert(map.Amount)
+                       // self.list.unshift(map);
+                       let  mapData =self.getList(map)  //返回是否存在
+                       if(mapData===null){
                            self.list.unshift(map);
+                       }else{
+                           mapData.Quantity=Number(mapData.Quantity)+Number(map.Quantity)
+                       }
+                       self.barcode='' //重置扫描区
                        self.countTotal()
-                     //  }
+
                      if (self.list.length>0){
                          self.show=true
                      }
+
+                      // self.alert("employeeId的变化"+self.emp.employeeId)
+                      // self.alert("vipid的变化"+self.vip.vipId)
+
                    },function(e){
                        //compelete
 
@@ -256,6 +288,76 @@
                 }else{
                     return false;
                 }
+            },getList(barcode) {  //检查ListView中的重复记录  参数也为map
+                for(let i=0;i<this.list.length;i++){
+                 let tempMap=this.list[i]
+                  if(barcode.GoodsID===tempMap.GoodsID && barcode.ColorID===tempMap.ColorID &&barcode.SizeID===tempMap.SizeID){
+                     let Quantity =tempMap.Quantity
+                      if(barcode.Quantity>0 && Quantity>0){
+                          return tempMap
+                      }else if(barcode.Quantity<0 && Quantity<0){
+                          return tempMap
+                      }
+
+                  }
+
+
+                }
+                return null;
+            },save(){
+                const self=this
+
+                if(self.savetitle==='新增'){
+                    var page=weex.requireModule("page")
+                    page.reload();
+                    return
+                }
+
+
+                const net = weex.requireModule('net');
+                const progress =weex.requireModule('progress')
+                var map={}
+                map.data=self.list;
+                map.vipId=self.vip.vipId;
+                map.vipCode= self.vip.vipCode;
+                map.employeeId= self.emp.employeeId;
+                map.amount= self.AmountSum;
+                map.retailAmount =Number(self.AmountSum)-Number(self.discountMoney) -Number(self.exchange_amount) //exchange_amount 积分兑换的金额
+                map.discountMoney=self.discountMoney
+                map.vipPointRate=1
+              //  map.put("retailAmount", retailAmount);
+               // map.put("discountMoney", String.valueOf(exchangeMoney + Double.parseDouble(discountMoney)));
+
+              //  map.put("vipPointRate", String.valueOf(vipPointRate));
+              //  map.put("vipDiscount", String.valueOf(vipDiscount));
+              //  map.put("posBackAudit", String.valueOf(posBackAudit));
+                map.qty= self.QuantitySum;
+                map.memo='demo生成====';
+                map.type=self.type
+                map.exchangedPoint='0'
+                map.posBackAudit=false
+
+
+                net.post(pref.getString('ip')+saveMethod,map,{},function(){
+                    //start
+                    progress.showFull('保存中...',true)
+                },function(e){
+                    //success
+
+                    progress.dismiss();
+                    self.savetitle ='新增'
+                },function(e){
+                    //exception
+
+                },function(){
+                    //compelete
+
+                });
+
+
+
+
+
             }
 
         },
