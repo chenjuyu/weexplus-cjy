@@ -12,6 +12,8 @@
 
 <script>
     import { WxcCity } from 'weex-ui';
+    const nav=weex.requireModule('navigator');
+    const net = weex.requireModule('net');
     const  pref=weex.requireModule('pref');
     let send=''
     export default {
@@ -30,26 +32,31 @@
                 send =p.send
                 //self.alert(self.list.length)
                 //self.list.splice(0,self.list.length);
-                const net = weex.requireModule('net');
+
                 net.post(pref.getString('ip')+'/select.do?'+p.send,{"currPage":"1"},{},function(){
                     //start
                 },function(e){
                     //success
                     //  self.back=e.res;
                     //  self.list.splice(0,self.list);
+                   /* self.alert(e)
+                    if (e){
+                        return
+                    } */
                     var array= e.res.obj;
-
-
                     for (var i=0;i<array.length;i++) {
                         var map = {};
                        if(p.send==='getEmployee'){
-                        map.id=array[i].EmployeeID;
+                        map.id   = array[i].EmployeeID;
                         map.Name = array[i].Name;
                         self.list.push(map);
                        }else if(p.send==='getVip'){
-                           map.id=array[i].vipId;
+                           map.id=array[i].VIPID;
                            map.Name = array[i].Name;
+                           map.Code=array[i].Code
                            map.DiscountRate=array[i].DiscountRate
+                           map.PointRate=array[i].PointRate
+                           map.UsablePoint=array[i].UsablePoint
                            self.list.push(map);
                        }
                     }
@@ -65,8 +72,8 @@
 
             },
             onSelected(lst,index){
-                let nav=weex.requireModule('navigator');
-                nav.backFull(lst,true);
+
+                nav.backFull(lst,false);
             },search(){
                 if(this.text!=''){
                    let self=this
@@ -91,6 +98,8 @@
                                 map.id=array[i].vipId;
                                 map.Name = array[i].Name;
                                 map.DiscountRate=array[i].DiscountRate
+                                map.PointRate=array[i].PointRate
+                                map.UsablePoint=array[i].UsablePoint
                                 self.list.push(map);
                             }
                         }
