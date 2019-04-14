@@ -18,7 +18,7 @@
             </div>
             <div style="flex-direction: row;justify-content:flex-start;align-items: center">
                 <text class="text">数量</text>
-                <input class="input" type="number" v-model="iqty"/>
+                <input class="input" type="text" v-model="iqty"/>
             </div>
             <div style="flex-direction: row;justify-content:flex-start;align-items: center">
                 <text class="text">货品/条码</text>
@@ -46,7 +46,7 @@
             <text style="width: 150px;height: 30px">{{ls.GoodsCode}}</text>
             <text class="cellitem">{{ls.ColorName}}</text>
             <text class="cellitem">{{ls.SizeName}}</text>
-            <text class="cellitem">{{iqty}}</text>
+            <text class="cellitem">{{ls.Quantity}}</text>
             <text class="cellitem">{{ls.Discount|numFilter}}</text>
             <text class="cellitem">{{ls.UnitPrice|numFilter}}</text>
             <text class="cellitem">{{ls.Amount}}</text>
@@ -63,8 +63,8 @@
                 <text>抵扣</text><input type="number" :disabled="true" v-model="Discount" style="width: 300px;height: 70px;border-bottom-width:1px;">
             </div>
             <div style="flex-direction: row; background-color: red; position: fixed;bottom: 0;left: 0;right: 0;height: 80px;align-items: center;justify-content:flex-start">
-                <text>合计：</text><text>{{QuantitySum}}</text><text>￥{{AmountSum}}</text>
-                <div style="background-color: orange;position: fixed;right: 0;bottom: 0;width: 250px;height: 80px;align-items: center;justify-content:center"><text @click="save">保存</text></div>
+                <text>合计：</text><text>{{QuantitySum}}</text><text style="margin-left: 100px">￥{{AmountSum}}</text>
+                <div  v-if="show" style="background-color: orange;position: fixed;right: 0;bottom: 0;width: 250px;height: 80px;align-items: center;justify-content:center"><text @click="save">保存</text></div>
             </div>
 
 
@@ -79,6 +79,8 @@
             return {
                 name: "possalesdetail",
                 show:false,
+                AmountSum:0.00,
+                QuantitySum:0,
                 DiscountSum:0.0,
                 amount:0.0,
                 type:'销售单',
@@ -95,7 +97,8 @@
                 vip:{
                     vipId:'',
                     vipCode:'',
-                    vip:''
+                    vip:'',
+                    DiscountRate:0.0
                 },
                 goods:{
                     goodsid:'',
@@ -153,6 +156,8 @@
                         }else if(id===2){
                             this.vip.vipId=res.id
                             this.vip.vip =res.Name;
+                            this.vip.DiscountRate=res.DiscountRate
+
                         }
                       //  this.alert(this.emp.employeeid);
                     }
@@ -162,6 +167,13 @@
                 let self=this
                if(this.barcode !='')
                {
+
+                   if (!self.isIntNum(self.iqty)){
+                       self.alert('数量：请输入数字')
+                       return
+                   }
+
+
                    const net = weex.requireModule('net');
                    net.post(pref.getString('ip')+'/select.do?analyticalBarcode',{"Type":"possales","BarCode":this.barcode},{},function(){
                        //start
@@ -170,6 +182,12 @@
                        //  self.back=e.res;
                        //  self.list.splice(0,self.list);
                      // if(e.res.obj !=undefined)
+
+                       if(e.res.obj===undefined){
+                           self.alert('没有找到此条码')
+                          return
+                       }
+
                        var array= e.res.obj;
 
                      //  self.alert(e.res.obj)
@@ -182,16 +200,18 @@
                                map.ColorName = array.ColorName;
                                map.SizeName = array.SizeName;
                                map.GoodsCode = array.GoodsCode;
-                               map.Discount = array.Discount;
+                               map.Discount = self.vip.DiscountRate==0?array.Discount:Number(self.vip.DiscountRate);
                                map.GoodsID = array.GoodsID;
                                map.ColorID = array.ColorID;
                                map.SizeID = array.SizeID;
                                map.UnitPrice = array.UnitPrice;
                                map.RetailSales = array.RetailSales;
-                               map.Amount=self.iqty==0?1:parseFloat(self.iqty * array.UnitPrice).toFixed(2) //先单价* 数量，后台促销后面再算
-                          // self.list.push(map); //最后面
+                               map.Quantity=self.iqty==0?1:self.iqty
+                             //  map.Amount=self.iqty==0?1:parseFloat(self.iqty * array.UnitPrice).toFixed(2) //先单价* 数量，后台促销后面再算
+                        //  self.list.push(map); //最后面
                         //   self.alert(map.Amount)
                            self.list.unshift(map);
+                       self.countTotal()
                      //  }
                      if (self.list.length>0){
                          self.show=true
@@ -207,7 +227,37 @@
 
 
 
+            },countTotal(){
+                //统计合计与金额 this.vip.DiscountRate !=0.0 &&
+                let sumAmt=0.00
+                let sumQty=0
+                if( this.list.length >0){
+
+                    for(let i=0;i< this.list.length;i++){
+                       let map=  this.list[i]
+                        this.alert("map的值:"+map.UnitPrice+";Quantity的值："+map.UnitPrice*0.8025)
+                        map.Amount=parseFloat(this.vip.DiscountRate==0?map.UnitPrice *map.Quantity:map.UnitPrice *map.Quantity*this.vip.DiscountRate/10.0).toFixed(2)
+                        sumAmt=Number(sumAmt)+Number(parseFloat(this.vip.DiscountRate==0?map.UnitPrice *map.Quantity:map.UnitPrice *map.Quantity*this.vip.DiscountRate/10.0).toFixed(2))
+                        sumQty=Number(sumQty)+Number(map.Quantity)
+                    }
+                 this.QuantitySum = sumQty
+                 this.AmountSum   = parseFloat(sumAmt).toFixed(2)
+
+
+
+
+                }
+
+            },isIntNum(val){
+                var regPos = /^[0-9]+.?[0-9]*$/;; // 非负整数
+                var regNeg = /^\-[1-9][0-9]*$/; // 负整数
+                if(regPos.test(val) || regNeg.test(val)){
+                    return true;
+                }else{
+                    return false;
+                }
             }
+
         },
         created() {
 
