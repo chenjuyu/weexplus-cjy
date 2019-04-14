@@ -6,7 +6,7 @@
         <div class="cell" v-for="(lst,index) in list" @click="onSelected(lst,index)">
             <text class="item">{{lst.Name}}</text>
         </div>
-        </scroller>s
+        </scroller>
     </div>
 </template>
 
@@ -26,12 +26,12 @@
 
 
                 var self=this
-                self.list.splice( self.list,0,self.list.length)
+                self.list.splice(0,self.list.length)
                 send =p.send
                 //self.alert(self.list.length)
                 //self.list.splice(0,self.list.length);
                 const net = weex.requireModule('net');
-                net.post(pref.getString('ip')+'/select.do?'+p.send,{currPage:"1"},{},function(){
+                net.post(pref.getString('ip')+'/select.do?'+p.send,{"currPage":"1"},{},function(){
                     //start
                 },function(e){
                     //success
@@ -46,6 +46,11 @@
                         map.id=array[i].EmployeeID;
                         map.Name = array[i].Name;
                         self.list.push(map);
+                       }else if(p.send==='getVip'){
+                           map.id=array[i].vipId;
+                           map.Name = array[i].Name;
+                           map.DiscountRate=array[i].DiscountRate
+                           self.list.push(map);
                        }
                     }
 
@@ -81,6 +86,11 @@
                             if(send==='getEmployee'){
                                 map.id=array[i].EmployeeID;
                                 map.Name = array[i].Name;
+                                self.list.push(map);
+                            }else if(send==='getVip'){
+                                map.id=array[i].vipId;
+                                map.Name = array[i].Name;
+                                map.DiscountRate=array[i].DiscountRate
                                 self.list.push(map);
                             }
                         }
