@@ -12,14 +12,6 @@
         android:id="@+id/viewfinder_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
-
-    <com.farwolf.view.flashlight
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/flash"
-        />
-    
-    
     
     <com.farwolf.view.TitleBar
         android:layout_width="match_parent"
@@ -27,4 +19,28 @@
         android:id="@+id/title"
         />
 
+        <TextView
+        android:id="@+id/sunline"
+        android:text="开灯"
+        android:textStyle="bold"
+        android:textColor="#FFF"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="bottom|left"
+        android:layout_marginLeft="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        />
+    <TextView
+        android:id="@+id/xiangce"
+        android:text="相册"
+        android:textStyle="bold"
+        android:textColor="#FFF"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        />
+    
+    
 </merge>
