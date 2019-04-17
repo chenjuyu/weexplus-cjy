@@ -18,12 +18,12 @@
             </div>
             <div style="flex-direction: row;justify-content:flex-start;align-items: center">
                 <text class="text">数量</text>
-                <input class="input" type="text" v-model="iqty"/>
+                <input class="input1" type="text" v-model="iqty"/>
             </div>
             <div style="flex-direction: row;justify-content:flex-start;align-items: center">
                 <text class="text">货品/条码</text>
                 <input class="input" type="number" v-model="barcode" @return="search" return-key-type="search"/>
-
+                 <text class="iconfont bar-ic" @click="qrclick">&#xe69a;</text>
 
             </div>
         </div>
@@ -176,7 +176,17 @@
                     }
 
                 });
-            },search(){
+            },qrclick(){
+                var qr=weex.requireModule('qr')
+                var p={};
+                p.color='#ffffff'//'#000000'
+                p.bgcolor='#00000000'//'#ffffff'
+                qr.open(p,(res)=>{
+                   // var url=res.url
+                    this.alert(res)
+                })
+            },
+            search(){
                 let self=this
                if(this.barcode !='')
                {
@@ -381,57 +391,72 @@
 </script>
 
 <style scoped>
-    .wrapper{
+    .iconfont {
+        font-family:iconfont;  /*必须写哦！！ */
+    }
+    .bar-ic{
+    /*  padding-top: 14px; */
+      font-size: 100px;
+      color: #0085ee;
+  }
+  .wrapper{
 
-        background-color:#eeeeee;
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-    }
-    .cell{
+      background-color:#eeeeee;
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+  }
+  .cell{
 
-        top: 0;
-        left: 0;
-        right: 0;
-        margin-bottom: 0px;
-        margin-top: 0;
-        flex-direction: row;
-    }
-    .cellitem{
-        width: 120px;
-        line-height: 50px;
+      top: 0;
+      left: 0;
+      right: 0;
+      margin-bottom: 0px;
+      margin-top: 0;
+      flex-direction: row;
+  }
+  .cellitem{
+      width: 120px;
+      line-height: 50px;
 
-    }
-    .input {
-        border-width: 1px;
-        margin-bottom: 10px;
-        height: 100px;
-        width: 750px;
-        background-color: #FFF;
-    }
-    .btn {
-        padding-top: 30px;
-        padding-bottom: 20px;
-        padding-left: 20px;
-        padding-right: 20px;
-        background-color: #FFF;
-        margin-bottom: 20px;
-        width: 750px;
-        height: 100px;
-        border-width: 1px;
-        align-items: flex-start;
-    }
-    .btn-text {
-    }
-    .tabbar{
-        display: block;
-        height: 230px;width: 750px; position: fixed;bottom: 0;left: 0;right: 0;background-color: #0088fb
-    }
-    .text{
-        width:100px;
-       direction: ltr;
-    }
+  }
+  .input {
+      border-width: 1px;
+      margin-bottom: 10px;
+      height: 100px;
+      width: 500px;
+      background-color: #FFF;
+  }
+  .input1 {
+      border-width: 1px;
+      margin-bottom: 10px;
+      height: 100px;
+      width: 750px;
+      background-color: #FFF;
+  }
+  .btn {
+      padding-top: 30px;
+      padding-bottom: 20px;
+      padding-left: 20px;
+      padding-right: 20px;
+      background-color: #FFF;
+      margin-bottom: 20px;
+      width: 750px;
+      height: 100px;
+      border-width: 1px;
+      align-items: flex-start;
+  }
+  .btn-text {
+  }
+  .tabbar{
+      display: block;
+      height: 230px;width: 750px; position: fixed;bottom: 0;left: 0;right: 0;background-color: #0088fb
+  }
+  .text{
+      width:100px;
+     direction: ltr;
+  }
 </style>
