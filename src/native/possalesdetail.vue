@@ -27,10 +27,23 @@
 
             </div>
         </div>
+
+        <wxc-dialog title="详情"
+                    :show="show1"
+                    :single="false"
+                    :is-checked="isChecked"
+                    :show-no-prompt="true"
+                    @wxcDialogCancelBtnClicked="wxcDialogCancelBtnClicked"
+                    @wxcDialogConfirmBtnClicked="wxcDialogConfirmBtnClicked"
+                    @wxcDialogNoPromptClicked="wxcDialogNoPromptClicked">
+
+           <div slot="content"><text>货号</text><input type="text" class="input1" v-model="lmap.GoodsCode" /></div>
+        </wxc-dialog>
+
      <scroller  style="width: 1100px" scroll-direction='horizontal'>
         <div  style="flex-direction: row">
             <text class="cellitem">条码</text>
-            <text style="width: 150px">货品</text>
+            <text class="cellitem">货品</text>
             <text class="cellitem">颜色</text>
             <text class="cellitem">尺码</text>
             <text class="cellitem">数量</text>
@@ -39,9 +52,9 @@
             <text class="cellitem">金额</text>
         </div>
          <scroller>
-        <div class="cell" v-for="(ls,index) in list">
+        <div class="cell" v-for="(ls,index) in list" @longpress="handleLongPress(ls,index)">
             <text class="cellitem">{{ls.Barcode}}</text>
-            <text style="width: 150px;height: 30px">{{ls.GoodsCode}}</text>
+            <text class="cellitem">{{ls.GoodsCode}}</text>
             <text class="cellitem">{{ls.ColorName}}</text>
             <text class="cellitem">{{ls.SizeName}}</text>
             <text class="cellitem">{{ls.Quantity}}</text>
@@ -73,9 +86,14 @@
 <script>
     const  pref=weex.requireModule('pref');
     const saveMethod="/salesTicket.do?saveSalesTicket"
+    import { WxcDialog } from 'weex-ui';
     export default {
+        components: { WxcDialog },
         data() {
             return {
+                lmap:{},
+                show1: false,
+                isChecked: false,
                 name: "possalesdetail",
                 savetitle:'保存',
                 show:false,
@@ -176,14 +194,25 @@
                     }
 
                 });
-            },qrclick(){
+            },handleLongPress(ls,index){
+                //this.alert("ls"+ls.GoodsCode +",index:"+index)
+                this.lmap=ls
+                this.lmap.index=index
+                this.show1 = true;
+            },
+            qrclick(){
+                const self=this
                 var qr=weex.requireModule('qr')
                 var p={};
                 p.color='#ffffff'//'#000000'
                 p.bgcolor='#00000000'//'#ffffff'
                 qr.open(p,(res)=>{
                    // var url=res.url
-                    this.alert(res)
+                    //this.alert(res)
+                    if(res !=undefined){
+                        self.barcode=res
+                        self.search()
+                    }
                 })
             },
             search(){
@@ -420,9 +449,12 @@
   }
   .cellitem{
       width: 120px;
-      line-height: 50px;
+      line-height: 70px;
 
   }
+    .cell:active{ /*按下的样式*/
+        background-color: #0085ee;
+    }
   .input {
       border-width: 1px;
       margin-bottom: 10px;
