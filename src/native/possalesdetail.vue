@@ -1,6 +1,6 @@
 <template>
     <div class="wrapper">
-        <head></head>
+        <head :rightText="rightText"  @rightClick="rightClick"></head>
         <div class="form">
             <div style="flex-direction: row;justify-content:flex-start;align-items: center;margin-top: 10px">
                 <text class="text">售货员</text>
@@ -32,13 +32,25 @@
                     :show="show1"
                     :single="false"
                     :is-checked="isChecked"
-                    :show-no-prompt="true"
+                    :show-no-prompt="false"
                     @wxcDialogCancelBtnClicked="wxcDialogCancelBtnClicked"
                     @wxcDialogConfirmBtnClicked="wxcDialogConfirmBtnClicked"
                     @wxcDialogNoPromptClicked="wxcDialogNoPromptClicked">
 
-           <div slot="content"><text>货号</text><input type="text" class="input1" v-model="lmap.GoodsCode" /></div>
+           <div slot="content" style="align-items: flex-start;line-height: 150px" >
+               <div style="flex-direction: row"><text>货号:{{lmap.GoodsCode}}</text></div>
+               <div style="flex-direction: row"><text>颜色:{{lmap.ColorName}}</text></div>
+               <div style="flex-direction: row"><text>尺码:{{lmap.SizeName}}</text></div>
+               <div style="flex-direction: row"><text>数量:</text><input type="number" class="dialoginput" v-model="lmap.Quantity" /></div>
+           </div>
         </wxc-dialog>
+
+        <wxc-popover ref="wxc-popover"
+                     :buttons="btns"
+                     :position="popoverPosition"
+                     :arrowPosition="popoverArrowPosition"
+                     @wxcPopoverButtonClicked="popoverButtonClicked"></wxc-popover>
+
 
      <scroller  style="width: 1100px" scroll-direction='horizontal'>
         <div  style="flex-direction: row">
@@ -86,12 +98,33 @@
 <script>
     const  pref=weex.requireModule('pref');
     const saveMethod="/salesTicket.do?saveSalesTicket"
-    import { WxcDialog } from 'weex-ui';
+    import { WxcDialog ,WxcPopover} from 'weex-ui';
     export default {
-        components: { WxcDialog },
+        components: { WxcDialog ,WxcPopover},
         data() {
             return {
+                rightText:'\ue602',
                 lmap:{},
+                popoverPosition:{x:-14,y:120},
+                popoverArrowPosition:{pos:'top',x:-15},
+                btns:[
+                    {
+                        icon: 'https://gw.alicdn.com/tfs/TB1Vm3abuuSBuNjy1XcXXcYjFXa-64-64.png',
+                        text:'Scan',
+                        key:'key-scan'
+                    },
+                    {
+                        icon: 'https://gw.alicdn.com/tfs/TB1U93abuuSBuNjy1XcXXcYjFXa-64-64.png',
+                        text:'My Qrcode',
+                        key:'key-qrcode'
+                    },
+                    {
+                        icon: 'https://gw.alicdn.com/tfs/TB1MWDTbwmTBuNjy1XbXXaMrVXa-64-64.png',
+                        text:'Help',
+                        key:'key-help'
+                    },
+                ],
+                oldqty:0,
                 show1: false,
                 isChecked: false,
                 name: "possalesdetail",
@@ -194,11 +227,30 @@
                     }
 
                 });
-            },handleLongPress(ls,index){
+            },rightClick(){
+                this.$refs['wxc-popover'].wxcPopoverShow();
+            }, popoverButtonClicked (obj) {
+               modal.toast({ 'message': `key:${obj.key}, index:${obj.index}`, 'duration': 1 });
+            },
+            handleLongPress(ls,index){
                 //this.alert("ls"+ls.GoodsCode +",index:"+index)
                 this.lmap=ls
-                this.lmap.index=index
+                this.oldqty=ls.Quantity
                 this.show1 = true;
+            },   wxcDialogCancelBtnClicked () {
+                //此处必须设置，组件为无状态组件，自己管理  取消取回原来的值
+                if(this.oldqty !=this.lmap.Quantity){
+                    this.lmap.Quantity=  this.oldqty
+                }
+                this.show1 = false;
+            },
+            wxcDialogConfirmBtnClicked () {
+                //此处必须设置，组件为无状态组件，自己管理
+                if(this.oldqty !=this.lmap.Quantity){
+                   // this.lmap.Amount= Number(this.lmap.Quantity) * Number(this.lmap.Discount)/10 *Number(this.lmap.UnitPrice)
+                    this.countTotal()
+                }
+                this.show1 = false;
             },
             qrclick(){
                 const self=this
@@ -217,6 +269,12 @@
             },
             search(){
                 let self=this
+
+                if(self.emp.employeeId ==='')
+                {
+                    self.alert('请先选择售货员')
+                    return
+                }
                if(this.barcode !='')
                {
 
@@ -306,7 +364,7 @@
 
                     for(let i=0;i< this.list.length;i++){
                        let map=  this.list[i]
-                        this.alert("map的值:"+map.UnitPrice+";Quantity的值："+map.UnitPrice*0.8025)
+                       // this.alert("map的值:"+map.UnitPrice+";Quantity的值："+map.UnitPrice*0.8025)
                         map.Amount=parseFloat(this.vip.DiscountRate==0?map.UnitPrice *map.Quantity:map.UnitPrice *map.Quantity*this.vip.DiscountRate/10.0).toFixed(2)
                         sumAmt=Number(sumAmt)+Number(parseFloat(this.vip.DiscountRate==0?map.UnitPrice *map.Quantity:map.UnitPrice *map.Quantity*this.vip.DiscountRate/10.0).toFixed(2))
                         sumQty=Number(sumQty)+Number(map.Quantity)
@@ -439,7 +497,6 @@
       bottom: 0;
   }
   .cell{
-
       top: 0;
       left: 0;
       right: 0;
@@ -461,6 +518,13 @@
       height: 100px;
       width: 500px;
       background-color: #FFF;
+  }
+  .dialoginput{
+      border-bottom-width: 1px;
+      height: 50px;
+      width: 300px;
+
+
   }
   .input1 {
       border-width: 1px;
