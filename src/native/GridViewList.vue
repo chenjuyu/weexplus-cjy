@@ -1,10 +1,11 @@
 <template>
     <div class="layout">
 
-            <head leftButton=""></head>
+            <head leftButton="" title="主页" rightButton=""></head>
        <scroller>
         <!--九宫格显示  <text class="iconfont bar-ic">&#xe614;</text> 动态显示要 即：字体编码后前四位是Unicode编码，想使用字符串来传递的话,只要将 “&#xe64b;” 改为 “\ue64b” 即可。-->
-       <div style="margin-top: 10px;"><text>基本资料</text></div>
+
+           <div style="margin-top: 10px;"><text>基本资料</text></div>
         <div class="sudoku_row">
         <div class="sudoku_item " :class="curSelect===sudoku.id?'opacity':''"   v-for="(sudoku,index) in sudokus" :key="index" @touchstart="touchstart(index)" @touchend="touchend" >
             <div> <!-- <image :src="sudoku.img_src" style="width:72px;height: 72px;" ></image> -->
@@ -26,7 +27,7 @@
            <!--九宫格显示 -->
            <div style="margin-top: 10px;"><text>分销管理</text></div>
            <div class="sudoku_row">
-               <div class="sudoku_item " :class="curSelect===sudoku.id?'opacity':''"   v-for="(sudoku,index) in sudokus" :key="index" @touchstart="touchstart(index)" @touchend="touchend" >
+               <div class="sudoku_item " :class="curSelect===sudoku.id?'opacity':''"   v-for="(sudoku,index) in sales" :key="index" @touchstart="touchstart(index)" @touchend="touchend" >
                    <div> <text class="iconfont bar-ic" style="width: 72px;height: 72px">{{sudoku.img_src}}</text>
                        <text>{{sudoku.name}} </text>
                    </div>
@@ -44,9 +45,9 @@
            </div>
 
            <!--九宫格显示 -->
-           <div style="margin-top: 10px;"><text>零售管理</text></div>
+           <div style="margin-top: 10px;"><text>零售管理</text> <text class="iconfont bar-ic">&#xeb4c;</text> </div>
            <div class="sudoku_row">
-               <div class="sudoku_item " :class="curSelect===sudoku.id?'opacity':''"   v-for="(sudoku,index) in sudokus" :key="index" @touchstart="touchstart(index)" @touchend="touchend" >
+               <div class="sudoku_item " :class="curSelect===sudoku.id?'opacity':''"   v-for="(sudoku,index) in possales" :key="index" @touchstart="touchstart(index)" @touchend="touchend" >
                    <div> <text class="iconfont bar-ic" style="width: 72px;height: 72px">{{sudoku.img_src}}</text>
                        <text>{{sudoku.name}} </text>
                    </div>
@@ -88,31 +89,21 @@
                     id:4,
                     name:'医院',
                     img_src:'\ue614'//require('../static/img/hospital.png')
-                },{
-                    id:5,
-                    name:'医院',
-                    img_src:'\ue614'//require('../static/img/hospital.png')
-                },{
-                    id:6,
-                    name:'医院',
-                    img_src:'\ue614'//require('../static/img/hospital.png')
-                },{
-                    id:7,
-                    name:'医院',
-                    img_src:'\ue614'//require('../static/img/hospital.png')
-                },{
-                    id:8,
-                    name:'医院',
-                    img_src:'\ue614'//require('../static/img/hospital.png')
-                },{
-                    id:9,
-                    name:'医院',
-                    img_src:'\ue614'//require('../static/img/hospital.png')
-                },{
-                    id:10,
-                    name:'医院',
-                    img_src:'\ue614'//require('../static/img/hospital.png')
-                }],
+                }
+                ],sales:[
+            {id:1,name:'订单',img_src:'\ue606'},
+            {id:2,name:'发货单',img_src:'\ue6bc'},
+            {id:3,name:'退货单',img_src:'\ue82a'},
+            {id:4,name:'收款单',img_src:'\ue71d'},
+            {id:5,name:'费用单',img_src:'\ue609'}
+                ],
+                possales:[
+                    {id:1,name:'销售',img_src:'\ueb4c'},
+                    {id:2,name:'日结',img_src:'\ue6b7'},
+                    {id:3,name:'缴费',img_src:'\ue601'},
+                    {id:4,name:'报表',img_src:'\ue6af'}
+
+                ]
 
             };
         },props:{
@@ -141,6 +132,9 @@
                 this.alert('触发这里了')
                 var that = this;
                 that.curSelect = null;
+
+
+
             }
         }
 
