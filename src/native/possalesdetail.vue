@@ -1,6 +1,6 @@
 <template>
     <div class="wrapper">
-        <head :rightText="rightText"  @rightClick="rightClick"></head>
+        <head :rightText="rightText" title="小票"  @rightClick="rightClick"></head>
         <div class="form">
             <div style="flex-direction: row;justify-content:flex-start;align-items: center;margin-top: 10px">
                 <text class="text">售货员</text>
@@ -38,10 +38,10 @@
                     @wxcDialogNoPromptClicked="wxcDialogNoPromptClicked">
 
            <div slot="content" style="align-items: flex-start;line-height: 150px" >
-               <div style="flex-direction: row"><text>货号:{{lmap.GoodsCode}}</text></div>
-               <div style="flex-direction: row"><text>颜色:{{lmap.ColorName}}</text></div>
-               <div style="flex-direction: row"><text>尺码:{{lmap.SizeName}}</text></div>
-               <div style="flex-direction: row"><text>数量:</text><input type="number" class="dialoginput" v-model="lmap.Quantity" /></div>
+               <div style="flex-direction: row;height: 80px;align-items: center"><text>货号:{{lmap.GoodsCode}}</text></div>
+               <div style="flex-direction: row ;height: 80px;align-items: center"><text>颜色:{{lmap.ColorName}}</text></div>
+               <div style="flex-direction: row;height: 80px;align-items: center"><text>尺码:{{lmap.SizeName}}</text></div>
+               <div style="flex-direction: row;height: 80px;align-items: center"><text>数量:</text><input type="number" class="dialoginput" v-model="lmap.Quantity" /></div>
            </div>
         </wxc-dialog>
 
@@ -85,7 +85,7 @@
                 <text>积分</text><input type="number"  v-model="Point" style="width: 300px;height: 70px;border-bottom-width:1px;"/>
                 <text>抵扣</text><input type="number" :disabled="true" v-model="exchange_amount" style="width: 300px;height: 70px;border-bottom-width:1px;">
             </div>
-            <div style="flex-direction: row; background-color: red; position: fixed;bottom: 0;left: 0;right: 0;height: 80px;align-items: center;justify-content:flex-start">
+            <div style="flex-direction: row; background-color: #1EA5FC; position: fixed;bottom: 0;left: 0;right: 0;height: 80px;align-items: center;justify-content:flex-start">
                 <text>合计：</text><text>{{QuantitySum}}</text><text style="margin-left: 100px">￥{{AmountSum}}</text>
                 <div  v-if="show" style="background-color: orange;position: fixed;right: 0;bottom: 0;width: 250px;height: 80px;align-items: center;justify-content:center"><text @click="save">{{savetitle}}</text></div>
             </div>
@@ -549,7 +549,8 @@
   }
   .tabbar{
       display: block;
-      height: 230px;width: 750px; position: fixed;bottom: 0;left: 0;right: 0;background-color: #0088fb
+      height: 230px;width: 750px; position: fixed;bottom: 0;left: 0;right: 0;
+      background-color: #1EA5FC;
   }
   .text{
       width:100px;
