@@ -9,7 +9,7 @@
                     <image :src="leftButton"
                            slot="left"
                            style="height: 70px;width: 70px;" ></image>
-                    <text style="font-size: 40px;" slot="middle">全部自定义化</text>
+                    <text :style="{'color':titleColor,'font-size':40+'px'}" slot="middle" >{{title}}</text>
 
                     <text slot="right" v-if="rightText" class="iconfont">{{rightText}}</text>
                     <image  slot="right" v-if="rightButton && !rightText"
@@ -131,14 +131,14 @@
         },
 
         created: function () {
-            var font=weex.requireModule("font");
-            font.addFont('iconfont','root:font/iconfont.ttf')//阿里的 iconfont
+          //  var font=weex.requireModule("font");
+           // font.addFont('iconfont','root:font/iconfont.ttf')//阿里的 iconfont不用本地的，直接用外网的
 
-          //  let domModule = weex.requireModule('dom');
-          /*  domModule.addRule('fontFace',{
+            let domModule = weex.requireModule('dom');
+            domModule.addRule('fontFace',{
                 'fontFamily': "iconfont",
-               'src':"url('root:font/iconfont.ttf')" // "url('root:font/iconfont.ttf')"//../ http://at.alicdn.com/t/font_1074303_e64s32fcc65.ttf
-            }) */
+               'src':"url('http://at.alicdn.com/t/font_1074303_e64s32fcc65.ttf')" // "url('root:font/iconfont.ttf')"//../ http://at.alicdn.com/t/font_1074303_e64s32fcc65.ttf
+            })
 
             this.adjust();
 
