@@ -3,7 +3,7 @@
 
         <text class="text">服务器地址:</text>
         <input class="input" type="text" placeholder="请输入服务器地址" v-model="ip" return-key-type="default" />
-       <div class="submit"> <text  @click="save" class="text1">保存</text> </div>
+        <div class="submit"> <text  @click="save" class="text1">保存</text> </div>
     </div>
 </template>
 
@@ -17,27 +17,22 @@
             }
         },
         methods:{
-          onLoad(p){
-             // debugger
-             // this.alert(p);
-           //this.name=p.name;
-              this.ip=pref.getString('ip');
-
-          },
+            onLoad(p){
+                // debugger
+                // this.alert(p);
+                //this.name=p.name;
+                this.ip=pref.getString('ip');
+            },
             save(){
-
-                    pref.setString('ip',this.ip);
-                    this.toast("保存成功");
-                  //  this.alert(pref.getString('ip'));
-                    this.push("root:index.js");
-
-
+                pref.setString('ip',this.ip);
+                this.toast("保存成功");
+                //  this.alert(pref.getString('ip'));
+                this.push("root:index.js");
             }
         },
         created(e){
             //alert(e)
         }
-
     }
 </script>
 
@@ -46,13 +41,11 @@
         justify-content: center;
         background-color:#eeeeee;
         text-align: center;
-
     }
     .text{
         color: black;
         margin-top: 30px;
-
-
+        font-size: 30px;
     }
     .text1{
         width: 110px;
@@ -61,8 +54,7 @@
         justify-content: center;
         align-items: center;
         background-color: #00B4FF;
-       text-align-all: center;
-
+        text-align-all: center;
     }
     .submit{
         /* background-color: black; */
