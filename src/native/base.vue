@@ -28,12 +28,14 @@
 
 
                 var self=this
+
                 self.list.splice(0,self.list.length)
                 send =p.send
+
                 //self.alert(self.list.length)
                 //self.list.splice(0,self.list.length);
 
-                net.post(pref.getString('ip')+'/select.do?'+p.send,{"currPage":"1"},{},function(){
+                net.post(pref.getString('ip')+'/select.do?'+p.send,{"currPage":"1","param":p.condition},{},function(){
                     //start
                 },function(e){
                     //success
@@ -58,6 +60,27 @@
                            map.PointRate=array[i].PointRate
                            map.UsablePoint=array[i].UsablePoint
                            self.list.push(map);
+                       } else if(p.send==='getPosSalesGoods'){
+                           map.id=array[i].GoodsID;
+                           map.Name = array[i].Name;
+                           map.Code=array[i].Code
+                           map.RetailSales=array[i].RetailSales
+                           map.UnitPrice=array[i].UnitPrice
+                           map.Discount=array[i].Discount
+                           map.DiscountFlag=array[i].DiscountFlag
+                           self.list.push(map);
+                       }else if (p.send==='getColorByGoodsCode'){
+                           map.id=array[i].ColorID;
+                           map.Name = array[i].Name;
+                           self.list.push(map);
+
+                       }
+                       else if (p.send==='getSizeByGoodsCode'){
+                           map.id=array[i].SizeID;
+                           map.Name = array[i].Name;
+                           map.Code=array[i].SizeCode
+                           self.list.push(map);
+
                        }
                     }
 
@@ -101,6 +124,27 @@
                                 map.PointRate=array[i].PointRate
                                 map.UsablePoint=array[i].UsablePoint
                                 self.list.push(map);
+                            }else if(p.send==='getPosSalesGoods'){
+                                map.id=array[i].GoodsID;
+                                map.Name = array[i].Name;
+                                map.Code=array[i].Code
+                                map.RetailSales=array[i].RetailSales
+                                map.UnitPrice=array[i].UnitPrice
+                                map.Discount=array[i].Discount
+                                map.DiscountFlag=array[i].DiscountFlag
+                                self.list.push(map);
+                            }else if (p.send==='getGoodsColor'){
+                                map.id=array[i].ColorID;
+                                map.Name = array[i].Name;
+                                self.list.push(map);
+
+                            }
+                            else if (p.send==='getSizeByGoodsCode'){
+                                map.id=array[i].SizeID;
+                                map.Name = array[i].Name;
+                                map.Code=array[i].SizeCode
+                                self.list.push(map);
+
                             }
                         }
 
@@ -148,6 +192,7 @@
     width: 750px;
     align-items: center;
     justify-content: center;
+    font-size: 30px;
 
 }
 </style>
