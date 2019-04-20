@@ -2,11 +2,11 @@
     <div class="wrapper">
         <head :rightText="rightText" title="小票"  @rightClick="rightClick"></head>
         <div class="form">
-            <div style="flex-direction: row;justify-content:flex-start;align-items: center;margin-top: 10px">
+            <div style="flex-direction: row;justify-content:flex-start;align-items: center;margin-top: 10px;">
                 <text class="text">售货员</text>
 
                 <div class="btn" @click="handleClick(1)">
-                    <text class="btn-text" :style="{'color':color}">{{emp.Name}}</text>
+                    <text class="btn-text" :style="{'color':colorName}">{{emp.Name}}</text>
                 </div>
 
             </div>
@@ -21,10 +21,27 @@
                 <input class="input1" type="text" v-model="iqty"/>
             </div>
             <div style="flex-direction: row;justify-content:flex-start;align-items: center">
-                <text class="text">货品/条码</text>
-                <input class="input" type="number" v-model="barcode" @return="search" return-key-type="search"/>
-                 <text class="iconfont bar-ic" @click="qrclick">&#xe69a;</text>
+                <text class="text">{{barlable}}</text>
+                <input class="input" type="number" v-model="barcode" v-if="!cs" @return="search" return-key-type="search" />
+                <div class="btn" @click="handleClick(5)" v-else>
+                    <text class="btn-text" :style="{'color':colorName}">{{goods.Name}}</text>
+                </div>
+                <text class="iconfont bar-ic" @click="qrclick" v-if="!cs">&#xe69a;</text>
 
+            </div>
+            <div style="flex-direction: row;justify-content:flex-start;align-items: center" v-if="cs && !mult">
+                <text class="text">颜色</text>
+                <div class="btn" @click="handleClick(3)">
+                    <text class="btn-text" :style="{'color':colorName}">{{color.color}}</text>
+                </div>
+
+            </div>
+            <div style="flex-direction: row;justify-content:flex-start;align-items: center" v-if="cs && !mult">
+                <text class="text">尺码</text>
+                <div class="input" @click="handleClick(4)">
+                    <text class="btn-text" :style="{'color':colorName}">{{size.size}}</text>
+                </div>
+                <text class="iconfont bar-ic" @click="qrclick" v-if="cs && !mult">&#xe603;</text>
             </div>
         </div>
 
@@ -38,10 +55,10 @@
                     @wxcDialogNoPromptClicked="wxcDialogNoPromptClicked">
 
            <div slot="content" style="align-items: flex-start;line-height: 150px" >
-               <div style="flex-direction: row;height: 80px;align-items: center"><text>货号:{{lmap.GoodsCode}}</text></div>
-               <div style="flex-direction: row ;height: 80px;align-items: center"><text>颜色:{{lmap.ColorName}}</text></div>
-               <div style="flex-direction: row;height: 80px;align-items: center"><text>尺码:{{lmap.SizeName}}</text></div>
-               <div style="flex-direction: row;height: 80px;align-items: center"><text>数量:</text><input type="number" class="dialoginput" v-model="lmap.Quantity" /></div>
+               <div style="flex-direction: row;height: 80px;align-items: center"><text class="size">货号:{{lmap.GoodsCode}}</text></div>
+               <div style="flex-direction: row ;height: 80px;align-items: center"><text class="size">颜色:{{lmap.ColorName}}</text></div>
+               <div style="flex-direction: row;height: 80px;align-items: center"><text class="size">尺码:{{lmap.SizeName}}</text></div>
+               <div style="flex-direction: row;height: 80px;align-items: center"><text class="size">数量:</text><input type="number" class="dialoginput" v-model="lmap.Quantity" /></div>
            </div>
         </wxc-dialog>
 
@@ -77,17 +94,17 @@
          </scroller>
      </scroller>
         <div  class="tabbar">
-            <div style="flex-direction: row;justify-content:flex-start;align-items: center">
-                <text>折让</text><input type="number"  v-model="discountMoney" style="width: 300px;height: 70px;border-bottom-width:1px;"/>
-                <text>实付</text><input type="number"  v-model="AmountSum" style="width: 300px;height: 70px;border-bottom-width:1px;">
+            <div style="flex-direction: row;justify-content:flex-start;align-items: center;">
+                <text class="size">折让</text><input type="number"  v-model="discountMoney" style="width: 300px;height: 70px;border-bottom-width:1px;"/>
+                <text class="size">实付</text><input type="number"  v-model="AmountSum" style="width: 300px;height: 70px;border-bottom-width:1px;">
             </div>
-            <div style="flex-direction: row;justify-content:flex-start;align-items: center">
-                <text>积分</text><input type="number"  v-model="Point" style="width: 300px;height: 70px;border-bottom-width:1px;"/>
-                <text>抵扣</text><input type="number" :disabled="true" v-model="exchange_amount" style="width: 300px;height: 70px;border-bottom-width:1px;">
+            <div style="flex-direction: row;justify-content:flex-start;align-items: center;">
+                <text class="size">积分</text><input type="number"  v-model="Point" style="width: 300px;height: 70px;border-bottom-width:1px;"/>
+                <text class="size">抵扣</text><input type="number" :disabled="true" v-model="exchange_amount" style="width: 300px;height: 70px;border-bottom-width:1px;">
             </div>
-            <div style="flex-direction: row; background-color: #1EA5FC; position: fixed;bottom: 0;left: 0;right: 0;height: 80px;align-items: center;justify-content:flex-start">
-                <text>合计：</text><text>{{QuantitySum}}</text><text style="margin-left: 100px">￥{{AmountSum}}</text>
-                <div  v-if="show" style="background-color: orange;position: fixed;right: 0;bottom: 0;width: 250px;height: 80px;align-items: center;justify-content:center"><text @click="save">{{savetitle}}</text></div>
+            <div style="flex-direction: row; background-color: #1EA5FC; position: fixed;bottom: 0;left: 0;right: 0;height: 80px;align-items: center;justify-content:flex-start;">
+                <text class="size">合计：</text><text class="size">{{QuantitySum}}</text><text style="margin-left: 100px" class="size">￥{{AmountSum}}</text>
+                <div  v-if="show" style="background-color: orange;position: fixed;right: 0;bottom: 0;width: 250px;height: 80px;align-items: center;justify-content:center"><text @click="save" class="size">{{savetitle}}</text></div>
             </div>
 
 
@@ -103,24 +120,35 @@
         components: { WxcDialog ,WxcPopover},
         data() {
             return {
+                cs:false,
+                mult:false,
+                color:{
+                    colorid:'',
+                    color:''
+                },
+                size:{
+                  sizeid:'',
+                  size:''
+                },
+                barlable:'条码',
                 rightText:'\ue602',
                 lmap:{},
                 popoverPosition:{x:-14,y:120},
                 popoverArrowPosition:{pos:'top',x:-15},
                 btns:[
                     {
-                        icon: 'https://gw.alicdn.com/tfs/TB1Vm3abuuSBuNjy1XcXXcYjFXa-64-64.png',
-                        text:'Scan',
+                       // icon: 'https://gw.alicdn.com/tfs/TB1Vm3abuuSBuNjy1XcXXcYjFXa-64-64.png',
+                        text:'货品录入',
                         key:'key-scan'
                     },
                     {
-                        icon: 'https://gw.alicdn.com/tfs/TB1U93abuuSBuNjy1XcXXcYjFXa-64-64.png',
-                        text:'My Qrcode',
+                        //icon: 'https://gw.alicdn.com/tfs/TB1U93abuuSBuNjy1XcXXcYjFXa-64-64.png',
+                        text:'多颜色录入',
                         key:'key-qrcode'
                     },
                     {
-                        icon: 'https://gw.alicdn.com/tfs/TB1MWDTbwmTBuNjy1XbXXaMrVXa-64-64.png',
-                        text:'Help',
+                     //   icon: 'https://gw.alicdn.com/tfs/TB1MWDTbwmTBuNjy1XbXXaMrVXa-64-64.png',
+                        text:'打印',
                         key:'key-help'
                     },
                 ],
@@ -158,12 +186,17 @@
                 goods:{
                     goodsid:'',
                     code:'',
-                    Name:''
+                    Name:'',
+                    RetailSales:0.0,
+                    UnitPrice:0.0,
+                    Discount:0.0,
+                    DiscountFlag:false
+
                 }
             }
         },
         props:{
-            color:{
+            colorName:{
                 default:"#eeeeee"
             }
         },methods:{
@@ -192,27 +225,49 @@
             },
             input(){
             },handleClick(id){
+                let self=this
                 let nav=weex.requireModule('navigator');
                 let wherestr="";
+                let condition=""
                 if (id===1){
                     wherestr= "getEmployee"
                 }else if(id===2){
                     wherestr= "getVip"
+                }else if(id===3) //颜色
+                {
+                    if(self.goods.goodsid===''){
+                        self.alert('请先输入货号')
+                        return
+                    }
+                    //手动选择
+                    wherestr="getColorByGoodsCode"
+                    condition ='@'+self.goods.goodsid+'@'
+                }else  if(id===4) //尺码
+                {
+                    if(self.goods.goodsid===''){
+                        self.alert('请先输入货号')
+                        return
+                    }
+                    //手动选择
+                    wherestr="getSizeByGoodsCode"
+                    condition ='@'+self.goods.goodsid+'@'
+                } else if(id===5){
+                    wherestr= "getPosSalesGoods"
                 }
 
-                nav.pushFull({url:'root:base.js',param: {"send": wherestr,"id":id},
+                nav.pushFull({url:'root:base.js',param: {"send": wherestr,"condition":condition,"id":id},
                     animate:true,
                     isPortrait:true},(res)=>{
+                    this.colorName = '#000'
+
                     if (res !=undefined) {
                         if (id===1){ //员工
 
                         this.emp.employeeId = res.id;
                           //  this.alert("employeeid:"+this.emp.employeeId)
                         this.emp.Name = res.Name;
-                        this.color = '#000'
+
                         }else if(id===2){ //vip
-
-
                             this.vip.vipId=res.id
                             this.vip.vip =res.Name;
                             this.vip.vipCode=res.Code
@@ -221,7 +276,21 @@
                             this.vip.vipPointRate =res.vipPointRate
                             this.vip.VIPTypeID =res.VIPTypeID
 
+                        } else if(id===5){
+                            this.goods.goodsid=res.id
+                            this.goods.Name=res.Name
+                            this.goods.code=res.Code
+                            this.goods.RetailSales=res.RetailSales
 
+                            this.goods.UnitPrice=res.UnitPrice
+                            this.goods.Discount=res.Discount
+                            this.goods.DiscountFlag=res.DiscountFlag
+                        }else if(id===3){
+                            this.color.colorid =res.id
+                            this.color.color=res.Name
+                        }else if(id===4){
+                            this.size.sizeid=res.id
+                            this.size.size=res.Name
                         }
 
                     }
@@ -230,7 +299,25 @@
             },rightClick(){
                 this.$refs['wxc-popover'].wxcPopoverShow();
             }, popoverButtonClicked (obj) {
-               modal.toast({ 'message': `key:${obj.key}, index:${obj.index}`, 'duration': 1 });
+               //modal.toast({ 'message': `key:${obj.key}, index:${obj.index}`, 'duration': 1 });
+                let self=this
+                let map=self.btns[obj.index]
+              if(obj.key==='key-scan') {
+                  if(self.cs){
+                      self.cs=false
+                      self.mult =false
+                      self.barlable='条码'
+                      map.text='货品录入'
+                  }else{
+                      self.cs=true
+                      self.mult =false
+                      self.barlable='货号'
+                      map.text='条码录入'
+                  }
+              }else if(obj.key==='key-qrcode'){
+                  self.cs=true
+                  self.mult =true
+              }
             },
             handleLongPress(ls,index){
                 //this.alert("ls"+ls.GoodsCode +",index:"+index)
@@ -254,6 +341,53 @@
             },
             qrclick(){
                 const self=this
+                if(self.cs ){
+                 if (self.goods.goodsid ==='' && self.color.colorid ==='' && self.size.sizeid ==='')
+                     return;
+
+                    let map={}
+                    map.GoodsName =self.goods.Name;
+                    map.ColorName =self.color.color
+                    map.SizeName = self.size.size
+                    map.GoodsCode = self.goods.code;
+                 //   map.Discount = self.vip.DiscountRate==0?array.Discount:Number(self.vip.DiscountRate);
+                  //  map.DiscountRate=self.vip.DiscountRate==0?array.Discount:Number(self.vip.DiscountRate);
+                    map.GoodsID =self.goods.goodsid
+                    map.ColorID =self.color.colorid
+                    map.SizeID = self.size.sizeid
+                    map.UnitPrice =self.goods.UnitPrice;
+                    map.RetailSales = self.goods.RetailSales;
+
+                    map.Discount = self.vip.DiscountRate==0?self.goods.Discount:Number(self.vip.DiscountRate);
+                    map.DiscountRate=self.vip.DiscountRate==0?self.goods.Discount:Number(self.vip.DiscountRate);
+
+                    map.Quantity=self.iqty==0?1:self.iqty
+
+                    if (map.DiscountRate !=null) {
+                        map.DiscountPrice =Number(map.UnitPrice) * Number(map.DiscountRate)/10.0
+                    }else{
+                        map.DiscountPrice=null
+                    }
+
+
+                    let  mapData =self.getList(map)  //返回是否存在
+                    if(mapData===null){
+                        self.list.unshift(map);
+                    }else{
+                        mapData.Quantity=Number(mapData.Quantity)+Number(map.Quantity)
+                    }
+
+
+                    self.clear()
+                    self.countTotal()
+
+                    if (self.list.length>0){
+                        self.show=true
+                    }
+
+                    return
+                }
+
                 var qr=weex.requireModule('qr')
                 var p={};
                 p.color='#ffffff'//'#000000'
@@ -266,6 +400,20 @@
                         self.search()
                     }
                 })
+            },clear(){
+                let self=this
+                self.barcode='' //重置扫描区
+                self.goods.goodsid=''
+                self.goods.code=''
+                self.goods.Name=''
+                self.goods.RetailSales=0.0
+                self.goods.UnitPrice=0.0
+                self.goods.Discount=0.0
+                self.goods.DiscountFlag=false
+                self.color.colorid=''
+                self.color.color=''
+                self.size.sizeid=''
+                self.size.size=''
             },
             search(){
                 let self=this
@@ -274,6 +422,10 @@
                 {
                     self.alert('请先选择售货员')
                     return
+                }
+                if(self.barlable==='货号' && self.barcode !=''){
+                    self.handleClick(5)
+                    return;//不用再查询条码
                 }
                if(this.barcode !='')
                {
@@ -483,9 +635,12 @@
     }
     .bar-ic{
     /*  padding-top: 14px; */
-      font-size: 100px;
+      font-size: 70px;
       color: #0085ee;
   }
+    .size{
+        font-size: 30px;
+    }
   .wrapper{
 
       background-color:#eeeeee;
@@ -495,6 +650,7 @@
       left: 0;
       right: 0;
       bottom: 0;
+
   }
   .cell{
       top: 0;
@@ -507,7 +663,7 @@
   .cellitem{
       width: 120px;
       line-height: 70px;
-
+      font-size: 30px
   }
     .cell:active{ /*按下的样式*/
         background-color: #0085ee;
@@ -515,7 +671,7 @@
   .input {
       border-width: 1px;
       margin-bottom: 10px;
-      height: 100px;
+      height: 70px;
       width: 500px;
       background-color: #FFF;
   }
@@ -529,23 +685,24 @@
   .input1 {
       border-width: 1px;
       margin-bottom: 10px;
-      height: 100px;
+      height: 70px;
       width: 750px;
       background-color: #FFF;
   }
   .btn {
-      padding-top: 30px;
+      padding-top: 20px;
       padding-bottom: 20px;
       padding-left: 20px;
       padding-right: 20px;
       background-color: #FFF;
       margin-bottom: 20px;
       width: 750px;
-      height: 100px;
+      height: 70px;
       border-width: 1px;
       align-items: flex-start;
   }
   .btn-text {
+      font-size: 30px;
   }
   .tabbar{
       display: block;
@@ -555,5 +712,6 @@
   .text{
       width:100px;
      direction: ltr;
+      font-size: 30px
   }
 </style>
